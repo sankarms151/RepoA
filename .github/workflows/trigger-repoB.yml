@@ -3,6 +3,7 @@ name: Notify RepoB on Changes
 on:
   push:
     branches:
+      - main
       - AWS-release
 
 jobs:
