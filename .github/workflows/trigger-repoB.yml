@@ -4,14 +4,33 @@ on:
   push:
     branches:
        - AWS-release
-
+       
 jobs:
-  trigger-repoB:
+  authenticate-user:
     runs-on: ubuntu-latest
     steps:
+      - name: Request OAuth Authentication
+        run: |
+          echo "Visit this URL to authenticate:"
+          echo "https://github.com/login/oauth/authorize?client_id=${{ secrets.CLIENT_ID }}&scope=repo"
+
+          # Pause execution for authentication
+          sleep 30
+          
+          echo "User authentication required"
+
+      - name: Generate GitHub App Token
+        id: get_token
+        uses: tibdex/github-app-token@v1
+        with:
+          app_id: ${{ secrets.APP_ID }}
+          private_key: ${{ secrets.PRIVATE_KEY }}
+
       - name: Send Repository Dispatch Event
         run: |
           curl -X POST -H "Accept: application/vnd.github.v3+json" \
-          -H "Authorization: token ${{ secrets.REPO_B_PAT }}" \
-          https://api.github.com/repos/sankarms151/RepoB/dispatches \
-          -d '{"event_type": "new-update"}'
+               -H "Authorization: Bearer ${{ steps.get_token.outputs.token }}" \
+               https://api.github.com/repos/${{ secrets.REPO_B }}/dispatches \
+               -d '{"event_type": "new-update"}'
+               
+               
