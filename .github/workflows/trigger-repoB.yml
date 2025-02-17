@@ -4,6 +4,7 @@ on:
   push:
     branches:
        - AWS-release
+  workflow_dispatch: #Manual Trigger
        
 jobs:
   authenticate-user:
